@@ -105,6 +105,25 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /auth/logout:
+    post:
+      tags: [auth]
+      operationId: logout
+      summary: Cerrar sesión
+      security: []
+      description: Invalida el refresh token. Idempotente; un token desconocido o ya invalidado también responde `204`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '204':
+          description: Sesión cerrada.
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
   /auth/me:
     get:
       tags: [auth]
