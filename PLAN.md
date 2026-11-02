@@ -1,6 +1,6 @@
 # Plan: repos starter por arquitectura
 
-Estado: **etapas 1 (contrato), 2 (front-vite-fsd) y 3 (nest-layered) hechas. Próxima: etapa 4, `nest-hexagonal` y `nest-ddd-cqrs`.**
+Estado: **etapas 1 (contrato), 2 (front-vite-fsd) y 3 (nest-layered) hechas. Etapa 4 en curso: `nest-hexagonal` hecho, falta `nest-ddd-cqrs`.**
 
 Repo: https://github.com/ffran-acosta/app-startersa
 
@@ -127,4 +127,5 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - ESLint en vez de `oxlint` (que traen las plantillas de Vite 8 y Nest 12), igual en front y backends.
 - Backends Nest: Nest 12 (ESM), Prettier sin `;` como el front, sin tests, JWT con `@nestjs/jwt` + guard global propio (sin passport), `bcryptjs`, refresh token opaco guardado como hash SHA-256. Postgres expuesto en el host en `5400 + n` (`nest-layered` → 5401).
 - Prisma 7 estable (no la 8 RC que npm marca como `latest`), con `@prisma/adapter-pg` y cliente generado en `src/generated`.
+- nest-hexagonal: Drizzle 0.45 estable (no la 1.0 RC) con `pg`; puertos como `abstract class` (token de DI sin importar Nest); casos de uso sin decoradores, registrados con `provideUseCase`; límites de capas con `no-restricted-imports` de ESLint; columnas snake_case vía `casing`; Docker aplica migraciones con el migrador de `drizzle-orm` compilado (sin `drizzle-kit` en prod).
 - front-vite-fsd: tipos generados desde el contrato (`pnpm gen:api`) con `openapi-fetch`; mock con Prism (`pnpm mock`, :4010, sin estado); `steiger` con `fsd/insignificant-slice` desactivada porque en el starter cada feature se usa una sola vez.
