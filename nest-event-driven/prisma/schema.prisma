@@ -1,0 +1,95 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TodoStatus {
+  PENDING
+  DONE
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          Role           @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  todos         Todo[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  tokenHash String   @unique
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Todo {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String     @db.VarChar(200)
+  description String?    @db.VarChar(2000)
+  status      TodoStatus @default(PENDING)
+  dueDate     DateTime?
+  ownerId     String     @db.Uuid
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([ownerId, createdAt])
+  @@map("todos")
+}
+
+/// Eventos pendientes de publicar: se escriben en la misma transacción que el cambio que los origina.
+model OutboxEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  type        String    @db.VarChar(100)
+  payload     Json
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+
+  @@index([publishedAt, createdAt])
+  @@map("outbox_events")
+}
+
+/// Eventos ya procesados por cada consumidor (idempotencia).
+model ProcessedEvent {
+  eventId     String   @db.Uuid
+  consumer    String   @db.VarChar(100)
+  processedAt DateTime @default(now())
+
+  @@id([eventId, consumer])
+  @@map("processed_events")
+}
+
+/// Proyección que arma el consumidor `activity`. Sin FK: sobrevive al borrado del todo.
+model TodoActivity {
+  id         String   @id @default(uuid()) @db.Uuid
+  type       String   @db.VarChar(100)
+  todoId     String   @db.Uuid
+  actorId    String   @db.Uuid
+  occurredAt DateTime
+
+  @@index([todoId, occurredAt])
+  @@map("todo_activity")
+}
