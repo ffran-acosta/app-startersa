@@ -1,6 +1,6 @@
 # Plan: repos starter por arquitectura
 
-Estado: **etapas 1 (contrato), 2 (front-vite-fsd), 3 (nest-layered), 4 (nest-hexagonal, nest-ddd-cqrs) y 5 (nest-modular-monolith) hechas; 6 (nest-microservices, nest-event-driven) y 7 (front-next-app-router) hechas. Sigue la etapa 8 (revisión transversal).**
+Estado: **etapas 1 a 8 hechas.** La revisión transversal (etapa 8) validó los 6 backends contra `contract/` (proxy Prism, Swagger comparado) y los dos fronts contra cada backend. Pendiente opcional: el Swagger de los backends no documenta respuestas de error ni schemas de respuesta.
 
 Repo: https://github.com/ffran-acosta/app-startersa
 
