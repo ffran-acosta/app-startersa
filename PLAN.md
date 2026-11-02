@@ -114,6 +114,13 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - README con diagrama y guía para cambiar el dominio.
 - Sin dependencias ni código que no se use.
 
+## Uso al iniciar un proyecto
+
+- **Bases reales:** `nest-layered` (o `nest-modular-monolith` si la app va a tener varios dominios) más un front: `front-vite-fsd` para una SPA detrás de login, `front-next-app-router` si hace falta SEO o render en el servidor.
+- **Referencia:** `nest-hexagonal`, `nest-ddd-cqrs`, `nest-microservices` y `nest-event-driven` sirven para aprender y consultar patrones. Solo se usan como base si el proyecto realmente lo pide; que estén acá no es motivo para elegirlas.
+- **Al clonar** (`npx degit ...`): primero `pnpm up --latest` y arreglar lo que rompa. Después borrar lo que el proyecto no necesite (roles, refresh, etc.) en vez de arrastrarlo, y reemplazar `Todo` según el README de la carpeta.
+- **Mantenimiento:** una mejora descubierta en un proyecto real (un fix de auth, una config) vuelve al starter correspondiente. Si un starter pasa mucho tiempo sin tocarse, conviene actualizarlo antes de usarlo.
+
 ## Decisiones tomadas
 
 - ORM mixto (Prisma / Drizzle / TypeORM según la tabla).
