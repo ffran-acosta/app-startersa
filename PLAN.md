@@ -1,6 +1,6 @@
 # Plan: repos starter por arquitectura
 
-Estado: **etapas 1 (contrato), 2 (front-vite-fsd) y 3 (nest-layered) hechas. Etapa 4 en curso: `nest-hexagonal` hecho, falta `nest-ddd-cqrs`.**
+Estado: **etapas 1 (contrato), 2 (front-vite-fsd), 3 (nest-layered) y 4 (nest-hexagonal, nest-ddd-cqrs) hechas. Sigue la etapa 5: `nest-modular-monolith`.**
 
 Repo: https://github.com/ffran-acosta/app-startersa
 
@@ -128,4 +128,5 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - Backends Nest: Nest 12 (ESM), Prettier sin `;` como el front, sin tests, JWT con `@nestjs/jwt` + guard global propio (sin passport), `bcryptjs`, refresh token opaco guardado como hash SHA-256. Postgres expuesto en el host en `5400 + n` (`nest-layered` → 5401).
 - Prisma 7 estable (no la 8 RC que npm marca como `latest`), con `@prisma/adapter-pg` y cliente generado en `src/generated`.
 - nest-hexagonal: Drizzle 0.45 estable (no la 1.0 RC) con `pg`; puertos como `abstract class` (token de DI sin importar Nest); casos de uso sin decoradores, registrados con `provideUseCase`; límites de capas con `no-restricted-imports` de ESLint; columnas snake_case vía `casing`; Docker aplica migraciones con el migrador de `drizzle-orm` compilado (sin `drizzle-kit` en prod).
+- nest-ddd-cqrs: TypeORM 1.1 estable con `@nestjs/cqrs` 12; `AggregateRoot` propio para que el dominio no importe Nest; commands devuelven solo el `id` y el controller lee con una query; read models separados de los repositorios de escritura; contextos `identity` y `todos` sin FK entre sí, aislados con reglas de ESLint; migraciones con la CLI de TypeORM vía `tsx` y migrador compilado en Docker. Ojo con TypeORM 1.x: `where` con `undefined` lanza error (`invalidWhereValuesBehavior`) y `returning([...])` toma nombres de propiedad, no de columna.
 - front-vite-fsd: tipos generados desde el contrato (`pnpm gen:api`) con `openapi-fetch`; mock con Prism (`pnpm mock`, :4010, sin estado); `steiger` con `fsd/insignificant-slice` desactivada porque en el starter cada feature se usa una sola vez.
