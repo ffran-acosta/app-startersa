@@ -1,6 +1,6 @@
 # Plan: repos starter por arquitectura
 
-Estado: **etapas 1 (contrato), 2 (front-vite-fsd), 3 (nest-layered), 4 (nest-hexagonal, nest-ddd-cqrs) y 5 (nest-modular-monolith) hechas; 6 (nest-microservices, nest-event-driven) hechas. Sigue la etapa 7 (`front-next-app-router`).**
+Estado: **etapas 1 (contrato), 2 (front-vite-fsd), 3 (nest-layered), 4 (nest-hexagonal, nest-ddd-cqrs) y 5 (nest-modular-monolith) hechas; 6 (nest-microservices, nest-event-driven) y 7 (front-next-app-router) hechas. Sigue la etapa 8 (revisión transversal).**
 
 Repo: https://github.com/ffran-acosta/app-startersa
 
@@ -74,7 +74,7 @@ Si se prefiere uniformidad, pasar todo a Prisma no cambia el resto del plan.
 
 - Next.js App Router, TypeScript, mismas pantallas que el front Vite y mismo contrato.
 - Estructura feature-based simple (`app/`, `features/`, `shared/`), con frontera server/client explícita.
-- Auth con JWT en cookie httpOnly manejada del lado servidor; `NEXT_PUBLIC_*` solo para valores públicos (URL de la API).
+- Auth con JWT en cookie httpOnly manejada del lado servidor. La URL de la API es `API_URL`, solo del servidor (el navegador nunca habla con la API), así que no hay `NEXT_PUBLIC_*`.
 - Se hace después del front Vite, como etapa aparte.
 
 ## Convenciones comunes (de CLAUDE.md global)
@@ -133,3 +133,4 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - front-vite-fsd: tipos generados desde el contrato (`pnpm gen:api`) con `openapi-fetch`; mock con Prism (`pnpm mock`, :4010, sin estado); `steiger` con `fsd/insignificant-slice` desactivada porque en el starter cada feature se usa una sola vez.
 - nest-microservices: monorepo de Nest (`apps/gateway`, `apps/auth`, `apps/todos`, `libs/`) con un solo `package.json`; cada app compila a `dist/<app>` y Docker usa una imagen con distinto `command`. Request-response sobre NATS (`@nats-io/transport-node`), servicios con `queue` para escalar en réplicas. Mensajes tipados en `libs/contracts` (patrón → payload/resultado); los servicios lanzan `rpcError(status, message)` y el gateway lo traduce; sin respuesta o timeout de 5 s → `503`. El gateway valida y verifica el JWT localmente (secreto compartido con auth); los servicios confían en el payload. Un Postgres con dos DBs (`auth`, `todos`) en `5405`, sin FK entre ellas; seed único que escribe en ambas. Imports a `libs/` relativos, sin alias de paths.
 - nest-event-driven: base `nest-layered` + `events/` (relay, consumidor base, idempotencia). El repositorio de todos escribe el cambio y su fila en `outbox_events` en la misma transacción; `OutboxRelay` hace polling cada 1 s con `FOR UPDATE SKIP LOCKED` y publica en un único stream `events` (`MAXLEN ~ 100000`). Consumidores extienden `StreamConsumer` (un consumer group cada uno) y aplican su efecto con la misma `tx` que inserta en `processed_events` (PK `eventId + consumer`). `XREADGROUP ... CLAIM` (Redis 8.4+, `redis` 6) retoma pendientes de más de 60 s; más de 5 entregas → log de error y ACK. Consumidor de ejemplo: `activity` llena `todo_activity` (no se expone por HTTP, el contrato no cambia). Postgres en `5406`, Redis en `6379` con AOF.
+- front-next-app-router: Next 16.4 con `cacheComponents`, así que las lecturas de cookies y `searchParams` van dentro de `<Suspense>`. RSC + Server Actions con zod y `useActionState`, sin TanStack Query ni React Hook Form; después de mutar, `refresh()` / `revalidatePath`. Tokens en cookies httpOnly que escriben las actions. `proxy.ts` renueva el access token antes del render, con un dedupe en memoria de 10 s por la rotación del refresh (solo sirve con una instancia). Un `401` con token redirige a `/session-expired`, que borra las cookies. Filtros con `next/form` (GET a `/todos`). Usa el mismo cliente `openapi-fetch` y los mismos tipos generados que el front Vite, y ESLint 9 con el `eslint-config-next` de la plantilla.

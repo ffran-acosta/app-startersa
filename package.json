@@ -3,6 +3,8 @@
   "scripts": {
     "front": "pnpm -C front-vite-fsd dev",
     "front:mock": "pnpm -C front-vite-fsd mock",
+    "next": "pnpm -C front-next-app-router dev",
+    "next:mock": "pnpm -C front-next-app-router mock",
     "layered": "docker compose -f nest-layered/docker-compose.yml up -d db && pnpm -C nest-layered dev",
     "layered:docker": "docker compose -f nest-layered/docker-compose.yml up --build",
     "hexagonal": "docker compose -f nest-hexagonal/docker-compose.yml up -d db && pnpm -C nest-hexagonal dev",
