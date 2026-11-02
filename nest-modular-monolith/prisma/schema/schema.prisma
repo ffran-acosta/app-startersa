@@ -1,0 +1,13 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+// Un schema de Postgres por módulo. Entre schemas no hay FK: los módulos se
+// referencian solo por id.
+datasource db {
+  provider = "postgresql"
+  schemas  = ["users", "auth", "todos"]
+}

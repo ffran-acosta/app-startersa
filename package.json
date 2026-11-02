@@ -8,6 +8,8 @@
     "hexagonal": "docker compose -f nest-hexagonal/docker-compose.yml up -d db && pnpm -C nest-hexagonal dev",
     "hexagonal:docker": "docker compose -f nest-hexagonal/docker-compose.yml up --build",
     "ddd-cqrs": "docker compose -f nest-ddd-cqrs/docker-compose.yml up -d db && pnpm -C nest-ddd-cqrs dev",
-    "ddd-cqrs:docker": "docker compose -f nest-ddd-cqrs/docker-compose.yml up --build"
+    "ddd-cqrs:docker": "docker compose -f nest-ddd-cqrs/docker-compose.yml up --build",
+    "modular": "docker compose -f nest-modular-monolith/docker-compose.yml up -d db && pnpm -C nest-modular-monolith dev",
+    "modular:docker": "docker compose -f nest-modular-monolith/docker-compose.yml up --build"
   }
 }
