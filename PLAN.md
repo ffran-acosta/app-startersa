@@ -121,6 +121,7 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - Microservicios con NATS. TCP queda descartado: es de juguete y cambiar de transporte en Nest es un cambio de configuración, no hace falta un repo extra.
 - Segundo front con Next.js incluido.
 - Un solo repo con carpetas autónomas; reutilización vía `degit` de la subcarpeta.
+- `package.json` en la raíz solo con atajos (`pnpm front`, `pnpm <backend>`, `pnpm <backend>:docker`) que corren `pnpm -C <carpeta>`. Sin dependencias ni `pnpm-workspace.yaml`: no viaja con `degit` y ninguna carpeta depende de él. Cada backend nuevo suma sus dos scripts.
 - Contrato: sin envoltorio en recursos sueltos, `{ data, meta }` en listados, schema `Error` único, `404` (no `403`) para todos ajenos, refresh con rotación, logout idempotente (`204` siempre).
 - TypeScript 5.9 en el front y 6.0 en los Nest (la que trae el CLI de Nest 12), nunca 7: TS 7 no expone la API de JS que usan `openapi-typescript`, `steiger` y `typescript-eslint`.
 - ESLint en vez de `oxlint` (que traen las plantillas de Vite 8 y Nest 12), igual en front y backends.
