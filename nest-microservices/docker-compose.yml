@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5405:5432'
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./docker/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d todos']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  nats:
+    image: nats:2.12-alpine
+    ports:
+      - '4222:4222'
+
+  gateway:
+    build: .
+    command: node dist/gateway/apps/gateway/src/main.js
+    env_file: .env
+    environment:
+      NATS_URL: nats://nats:4222
+    ports:
+      - '3005:3005'
+    depends_on:
+      - nats
+
+  auth:
+    build: .
+    command: sh -c "node_modules/.bin/prisma migrate deploy --config apps/auth/prisma.config.ts && node dist/auth/apps/auth/src/main.js"
+    env_file: .env
+    environment:
+      NATS_URL: nats://nats:4222
+      AUTH_DATABASE_URL: postgresql://postgres:postgres@db:5432/auth
+    depends_on:
+      db:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  todos:
+    build: .
+    command: sh -c "node_modules/.bin/prisma migrate deploy --config apps/todos/prisma.config.ts && node dist/todos/apps/todos/src/main.js"
+    env_file: .env
+    environment:
+      NATS_URL: nats://nats:4222
+      TODOS_DATABASE_URL: postgresql://postgres:postgres@db:5432/todos
+    depends_on:
+      db:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+volumes:
+  db-data:

@@ -1,0 +1,4 @@
+dist
+pnpm-lock.yaml
+apps/*/src/generated
+apps/*/prisma/migrations
