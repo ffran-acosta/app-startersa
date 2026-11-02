@@ -1,6 +1,8 @@
 # Plan: repos starter por arquitectura
 
-Estado: **etapa 1 (contrato) hecha.**
+Estado: **etapas 1 (contrato), 2 (front-vite-fsd) y 3 (nest-layered) hechas. Próxima: etapa 4, `nest-hexagonal` y `nest-ddd-cqrs`.**
+
+Repo: https://github.com/ffran-acosta/app-startersa
 
 ## Objetivo
 Tener repos base listos para clonar y arrancar apps personales. Cada backend implementa una arquitectura distinta con el mismo dominio mínimo (`Todo` + auth), y un único front los consume a todos. El dominio `Todo` es descartable: se reemplaza por el de la app nueva sin tocar la estructura.
@@ -98,6 +100,12 @@ Si se prefiere uniformidad, pasar todo a Prisma no cambia el resto del plan.
 
 Cada etapa se revisa antes de pasar a la siguiente.
 
+## Flujo de trabajo
+
+- Una rama, un commit y un PR por carpeta (`feat/<carpeta>`, commit `feat(<carpeta>): ...`), mergeado con **Squash and merge**.
+- Se implementa todo, se corre lint + typecheck + build, se revisa y prueba en local sin commitear; recién al aprobar se hace el único commit.
+- Cambios al contrato o a este plan van en el PR de la carpeta que los motiva, o en uno propio si son independientes.
+
 ## Definición de terminado (por carpeta)
 
 - `docker compose up` levanta DB y API; las migraciones corren limpias.
@@ -113,4 +121,9 @@ Cada etapa se revisa antes de pasar a la siguiente.
 - Microservicios con NATS. TCP queda descartado: es de juguete y cambiar de transporte en Nest es un cambio de configuración, no hace falta un repo extra.
 - Segundo front con Next.js incluido.
 - Un solo repo con carpetas autónomas; reutilización vía `degit` de la subcarpeta.
-- Contrato: sin envoltorio en recursos sueltos, `{ data, meta }` en listados, schema `Error` único, `404` (no `403`) para todos ajenos, refresh con rotación.
+- Contrato: sin envoltorio en recursos sueltos, `{ data, meta }` en listados, schema `Error` único, `404` (no `403`) para todos ajenos, refresh con rotación, logout idempotente (`204` siempre).
+- TypeScript 5.9 en el front y 6.0 en los Nest (la que trae el CLI de Nest 12), nunca 7: TS 7 no expone la API de JS que usan `openapi-typescript`, `steiger` y `typescript-eslint`.
+- ESLint en vez de `oxlint` (que traen las plantillas de Vite 8 y Nest 12), igual en front y backends.
+- Backends Nest: Nest 12 (ESM), Prettier sin `;` como el front, sin tests, JWT con `@nestjs/jwt` + guard global propio (sin passport), `bcryptjs`, refresh token opaco guardado como hash SHA-256. Postgres expuesto en el host en `5400 + n` (`nest-layered` → 5401).
+- Prisma 7 estable (no la 8 RC que npm marca como `latest`), con `@prisma/adapter-pg` y cliente generado en `src/generated`.
+- front-vite-fsd: tipos generados desde el contrato (`pnpm gen:api`) con `openapi-fetch`; mock con Prism (`pnpm mock`, :4010, sin estado); `steiger` con `fsd/insignificant-slice` desactivada porque en el starter cada feature se usa una sola vez.
