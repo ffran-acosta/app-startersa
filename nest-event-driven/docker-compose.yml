@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest_event_driven
+    ports:
+      - '5406:5432'
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nest_event_driven']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  redis:
+    image: redis:8-alpine
+    # AOF: los eventos publicados y todavía sin ACK sobreviven a un reinicio de Redis
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/nest_event_driven
+      REDIS_URL: redis://redis:6379
+    ports:
+      - '3006:3006'
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  db-data:
+  redis-data:

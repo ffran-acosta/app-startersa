@@ -12,6 +12,8 @@
     "modular": "docker compose -f nest-modular-monolith/docker-compose.yml up -d db && pnpm -C nest-modular-monolith dev",
     "modular:docker": "docker compose -f nest-modular-monolith/docker-compose.yml up --build",
     "microservices": "docker compose -f nest-microservices/docker-compose.yml up -d db nats && pnpm -C nest-microservices dev",
-    "microservices:docker": "docker compose -f nest-microservices/docker-compose.yml up --build"
+    "microservices:docker": "docker compose -f nest-microservices/docker-compose.yml up --build",
+    "event-driven": "docker compose -f nest-event-driven/docker-compose.yml up -d db redis && pnpm -C nest-event-driven dev",
+    "event-driven:docker": "docker compose -f nest-event-driven/docker-compose.yml up --build"
   }
 }
